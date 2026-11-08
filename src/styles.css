@@ -124,3 +124,14 @@ select {
     border: 1px solid #ccc;
 
 }
+.input-error {
+    border-color: red;
+    margin-bottom: 5px;
+}
+
+.error-text {
+    color: red;
+    font-size: 14px;
+    margin: 0 0 20px;
+    text-align: left;
+}
