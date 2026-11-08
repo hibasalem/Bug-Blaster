@@ -4,7 +4,10 @@ import sortTickets from "../utils/sortTickets";
 
 export default function TicketList({ tickets, dispatch, sort }) {
   return tickets.length === 0 ? (
-    <p className="empty-state">No tickets yet. Create one above.</p>
+    <div className="empty-state">
+      <h3>No tickets yet</h3>
+      <p>Click "New ticket" to report your first bug.</p>
+    </div>
   ) : (
     <div className="ticket-list">
       {sortTickets(tickets, sort).map((ticket) => (

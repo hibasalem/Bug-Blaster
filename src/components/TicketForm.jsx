@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { priorities, defaultPriority } from "../constants/priorities";
 
-export default function TicketForm({ dispatch, editingTicket }) {
+export default function TicketForm({ dispatch, editingTicket, onClose }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState(defaultPriority);
@@ -38,57 +38,68 @@ export default function TicketForm({ dispatch, editingTicket }) {
       payload: ticket,
     });
     clearForm();
+    onClose();
   };
 
   return (
     <form onSubmit={handleSubmit} className="ticket-form">
-      <div>
-        <label>Title</label>
+      <div className="form-field">
+        <label className="form-label">Title</label>
         <input
           type="text"
           value={title}
           className="form-input"
+          placeholder="Short summary of the bug"
           onChange={(e) => setTitle(e.target.value)}
         />
       </div>
 
-      <div>
-        <label>Description</label>
+      <div className="form-field">
+        <label className="form-label">Description</label>
         <textarea
           value={description}
           className="form-input"
+          placeholder="Steps to reproduce, expected vs actual behaviour..."
           onChange={(e) => setDescription(e.target.value)}
         />
       </div>
 
-      <fieldset className="priority-fieldset">
-        <legend>Priority</legend>
-        {priorities.map(({ value, label }) => (
-          <label key={value} className="priority-label">
-            <input
-              type="radio"
-              value={value}
-              checked={priority === value}
-              className="priority-input"
-              onChange={(e) => setPriority(e.target.value)}
-            />
-            {label}
-          </label>
-        ))}
+      <fieldset className="form-field priority-fieldset">
+        <legend className="form-label">Priority</legend>
+        <div className="priority-options">
+          {priorities.map(({ value, label, className }) => (
+            <label
+              key={value}
+              className={`priority-option ${priority === value ? "selected" : ""}`}
+            >
+              <input
+                type="radio"
+                value={value}
+                checked={priority === value}
+                onChange={(e) => setPriority(e.target.value)}
+              />
+              <span className={`status-dot ${className}`}></span>
+              {label}
+            </label>
+          ))}
+        </div>
       </fieldset>
 
-      <button type="submit" className="button">Save
-      </button>
-
-      {editingTicket && (
+      <div className="form-actions">
         <button
           type="button"
-          className="button"
-          onClick={() => dispatch({ type: "CLEAR_EDITING_TICKET" })}
+          className="button button-secondary"
+          onClick={() => {
+            clearForm();
+            onClose();
+          }}
         >
           Cancel
         </button>
-      )}
+        <button type="submit" className="button button-primary">
+          Save
+        </button>
+      </div>
     </form>
   );
 }
