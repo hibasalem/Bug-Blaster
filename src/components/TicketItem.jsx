@@ -1,19 +1,21 @@
 import React from "react";
-
-const priorityClasses = {
-  1: "priority-low",
-  2: "priority-medium",
-  3: "priority-high",
-};
+import { priorities } from "../constants/priorities";
 
 export default function TicketItem({ ticket, dispatch }) {
   const { title, description, priority } = ticket;
 
   return (
     <div className="ticket-item">
-      <div className={`priority-dot ${priorityClasses[priority]}`}></div>
+      <div
+        className={`priority-dot ${
+          priorities.find((p) => p.value === priority)?.className
+        }`}
+      ></div>
       <h3>{title}</h3>
       <p>{description}</p>
+      <p className="ticket-date">
+        Created: {new Date(ticket.createdAt).toLocaleString()}
+      </p>
       <button
         className="button"
         onClick={() => dispatch({ type: "SET_EDITING_TICKET", payload: ticket })}
