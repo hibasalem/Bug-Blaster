@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import "./styles.css";
 import TicketForm from "./components/TicketForm";
 import TicketList from "./components/TicketList";
@@ -16,19 +16,20 @@ function App() {
   }));
   const [sort, setSort] = useState(initialSort);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const isDrawerOpen = isFormOpen || Boolean(state.editingTicket);
 
   useEffect(() => {
     saveTickets(state.tickets);
   }, [state.tickets]);
 
-  const closeDrawer = () => {
+  const closeDrawer = useCallback(() => {
     setIsFormOpen(false);
     dispatch({ type: "CLEAR_EDITING_TICKET" });
-  };
+  }, []);
 
   return (
     <div className="app">
-      <header className="app-header">
+      <header className="app-header" inert={isDrawerOpen}>
         <div className="app-header-inner">
           <h1 className="brand">
             <span className="brand-logo">BB</span>
@@ -43,7 +44,7 @@ function App() {
         </div>
       </header>
 
-      <main className="container">
+      <main className="container" inert={isDrawerOpen}>
         <StatusBar tickets={state.tickets}>
           <TicketSort
             controls={sortControls}
@@ -58,13 +59,14 @@ function App() {
       </main>
 
       <Drawer
-        isOpen={isFormOpen || Boolean(state.editingTicket)}
+        isOpen={isDrawerOpen}
         title={state.editingTicket ? "Edit ticket" : "New ticket"}
         onClose={closeDrawer}
       >
         <TicketForm
           dispatch={dispatch}
           editingTicket={state.editingTicket}
+          isOpen={isDrawerOpen}
           onClose={closeDrawer}
         />
       </Drawer>

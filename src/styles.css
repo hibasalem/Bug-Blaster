@@ -462,6 +462,7 @@ select:focus {
 }
 
 .priority-option {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -484,6 +485,11 @@ select:focus {
     position: absolute;
     opacity: 0;
     pointer-events: none;
+}
+
+.priority-option:has(input:focus-visible) {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 
 .priority-option.selected {

@@ -1,10 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useId, useState } from "react";
 import { priorities, defaultPriority } from "../constants/priorities";
 
-export default function TicketForm({ dispatch, editingTicket, onClose }) {
+export default function TicketForm({ dispatch, editingTicket, isOpen, onClose }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState(defaultPriority);
+  const titleId = useId();
+  const descriptionId = useId();
 
   const clearForm = useCallback(() => {
     setTitle("");
@@ -20,7 +22,7 @@ export default function TicketForm({ dispatch, editingTicket, onClose }) {
     } else {
       clearForm();
     }
-  }, [editingTicket, clearForm]);
+  }, [editingTicket, isOpen, clearForm]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,7 +30,7 @@ export default function TicketForm({ dispatch, editingTicket, onClose }) {
     const ticket = {
       id: editingTicket ? editingTicket.id : crypto.randomUUID(),
       createdAt: editingTicket ? editingTicket.createdAt : new Date().toISOString(),
-      title,
+      title: title.trim(),
       description,
       priority,
     };
@@ -37,26 +39,30 @@ export default function TicketForm({ dispatch, editingTicket, onClose }) {
       type: editingTicket ? "UPDATE_TICKET" : "ADD_TICKET",
       payload: ticket,
     });
-    clearForm();
     onClose();
   };
 
   return (
     <form onSubmit={handleSubmit} className="ticket-form">
       <div className="form-field">
-        <label className="form-label">Title</label>
+        <label htmlFor={titleId} className="form-label">Title</label>
         <input
+          id={titleId}
           type="text"
           value={title}
           className="form-input"
           placeholder="Short summary of the bug"
+          required
+          pattern=".*\S.*"
+          title="Title can't be empty"
           onChange={(e) => setTitle(e.target.value)}
         />
       </div>
 
       <div className="form-field">
-        <label className="form-label">Description</label>
+        <label htmlFor={descriptionId} className="form-label">Description</label>
         <textarea
+          id={descriptionId}
           value={description}
           className="form-input"
           placeholder="Steps to reproduce, expected vs actual behaviour..."
@@ -74,6 +80,7 @@ export default function TicketForm({ dispatch, editingTicket, onClose }) {
             >
               <input
                 type="radio"
+                name="priority"
                 value={value}
                 checked={priority === value}
                 onChange={(e) => setPriority(e.target.value)}
@@ -86,14 +93,7 @@ export default function TicketForm({ dispatch, editingTicket, onClose }) {
       </fieldset>
 
       <div className="form-actions">
-        <button
-          type="button"
-          className="button button-secondary"
-          onClick={() => {
-            clearForm();
-            onClose();
-          }}
-        >
+        <button type="button" className="button button-secondary" onClick={onClose}>
           Cancel
         </button>
         <button type="submit" className="button button-primary">
